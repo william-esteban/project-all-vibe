@@ -22,7 +22,7 @@ async function bootstrap() {
         'authentication, and access control across web and mobile applications.',
     )
     .setVersion('1.0')
-    .addTag('authentication')
+    .addTag('authentication', 'users')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

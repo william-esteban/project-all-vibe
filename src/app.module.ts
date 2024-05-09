@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { UserModule } from './modules/user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { ConnectionModule } from './libs/persistence/connection.module';
+import { AuthModule } from './libs/auth/auth.module';
 import dbConfig from './libs/persistence/db.config';
-
 
 @Module({
   imports: [
@@ -14,8 +14,7 @@ import dbConfig from './libs/persistence/db.config';
     }),
     ConnectionModule,
     UserModule,
-    
-
+    AuthModule,
   ],
   controllers: [],
   providers: [],
