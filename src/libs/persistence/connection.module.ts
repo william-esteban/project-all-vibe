@@ -8,10 +8,10 @@ import dbConnect from './db.config'
     imports: [
         MongooseModule.forRootAsync({
           useFactory: (configService: ConfigType<typeof dbConnect>) => {
-            const { db, env} = configService;
+            const { db , env} = configService;     
             const uriDb =
-              env === 'local'
-                ? ` ${db.connection}${db.host}/${db.name}`
+              env === process.env.ENVIROMENT
+                ? ` ${db.connection}/${db.name}`
                 : `mongodb+srv://${db.user}:${db.password}@cluster0platzinestjs.9xczul6.mongodb.net/${db.name}?retryWrites=true&w=majority`
             return {
               uri: uriDb,
