@@ -9,6 +9,8 @@ import { Model } from 'mongoose';
 import { CreateUserDto, UpdateUserDto } from '../dtos';
 import { User } from '../entity/user.entity';
 
+
+
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
@@ -23,9 +25,12 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    // const hashedPassword = await this.hashservice.hash(
+    //   createUserDto.password,
 
-    const createdUser = new this.userModel(createUserDto);
-    return createdUser.save();
+   // )
+     const createdUser = new this.userModel(createUserDto);
+     return createdUser.save();
   }
 
   async findAll(): Promise<User[]> {
@@ -38,6 +43,25 @@ export class UserService {
       throw new NotFoundException(`User with username ${id} not found`);
     }
     return user;
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    const user = await this.userModel.findOne({ email }).exec();
+    if (!user) {
+      throw new NotFoundException(`user with email address ${email} not found`);
+    }
+    return user;
+  }
+
+  async findOneByEmailRegister(email: string): Promise<User> {
+    const user = await this.userModel.findOne({ email }).exec();
+    if (user) {
+      throw new HttpException(
+        `user with email   ${email} already exists`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return user ;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
