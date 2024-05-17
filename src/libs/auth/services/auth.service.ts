@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { HashService } from 'src/libs/shared/hash/hash.service';
 import { UserService } from 'src/modules/user/services/user.service';
@@ -30,7 +30,13 @@ export class AuthService {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
 
-    return this.getTokens({ sub: user.id });
+    const payload = {
+      sub: user.id,
+      name: user.username,
+      role: user.role
+    }
+
+    return this.getTokens(payload);
   }
 
   async register(signUPDto: SignUpDto): Promise<User> {
@@ -46,6 +52,22 @@ export class AuthService {
     await user.save();
     return user;
   }
+ 
+  async check(token: string): Promise<JwtPayload> {
+    try {
+      const payload = this.jwtService.verify<JwtPayload>(token,{
+        secret: process.env.JWT_SECRET,
+      })
+      return payload;
+    } catch (error) {
+      console.error('error in token validation: ', error);
+      throw new UnauthorizedException('invalid token')
+      
+      
+    }
+  }
+
+
 
   async getTokens(jwtPayload: JwtPayload): Promise<Tokens> {
     const secretKey = process.env.JWT_SECRET;

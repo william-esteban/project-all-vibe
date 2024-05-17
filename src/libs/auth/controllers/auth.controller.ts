@@ -1,8 +1,10 @@
 
-import { Controller, Body, Post, HttpCode, HttpStatus, Req, Res } from '@nestjs/common';
+import { Controller, Body, Post, HttpCode, HttpStatus, Req, Res, UseGuards, Get, Headers } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { LoginDto, SignUpDto } from '../dtos/export';
 import { Public } from 'src/libs/decorators/exports';
+import { ApiOperation } from '@nestjs/swagger';
+import { AtGuard } from '../Guard/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -22,14 +24,12 @@ export class AuthController {
     return this.authService.register(signUpDto);
   }
 
-  @Public()
-  @HttpCode(HttpStatus.OK)
-  @Post('logout')
-  logout(@Req() req, @Res() res) {
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
-    return { success: true };
-    // return this.authService.logout(req, res);
+  @ApiOperation({ summary: 'verify token'})
+  @Get('check')
+  @UseGuards(AtGuard)
+  async check(@Headers( 'Authorization') authHeader: string){
+    const token = authHeader.replace('Bearer', '');
+    return this.authService.check(token)
   }
 
 
